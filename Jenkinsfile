@@ -23,6 +23,7 @@ pipeline {
                 }
             }
             steps {
+                sh "chmod +x mvnw"
                 sh "./mvnw test"
             }
         }
