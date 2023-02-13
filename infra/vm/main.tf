@@ -4,6 +4,11 @@ provider "google" {
   zone    = var.zone
 }
 
+provider "vault" {
+  address = "http://127.0.0.1:8201"
+  
+}
+
 variable "project" {
   default = "epam-project-biba"
 }
@@ -14,6 +19,10 @@ variable "region" {
 
 variable "zone" {
   default = "europe-west1-b"
+}
+
+data "vault_generic_secret" "petclinic_account" {
+  path = "secrets/petclinic"
 }
 
 data "google_compute_address" "jenkins-ip" {
@@ -80,8 +89,8 @@ resource "google_sql_database" "petclinic_biba" {
 }
 
 resource "google_sql_user" "users" {
-  name     = "petclinic"
-  password = "petclinic"
+  name     = "${data.vault_generic_secret.petclinic_account.data["MYSQL_USER"]}"
+  password = "${data.vault_generic_secret.petclinic_account.data["MYSQL_PASS"]}"
   instance = google_sql_database_instance.instance.name
 }
 
