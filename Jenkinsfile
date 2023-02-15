@@ -36,14 +36,14 @@ pipeline {
             }
             steps {
                 googleStorageUpload bucket: 'gs://petclinic-artifacts/cicd', credentialsId: 'epam-project-biba', pattern: 'target/*.jar'
-          
+                googleStorageUpload bucket: 'gs://petclinic-artifacts/cicd', credentialsId: 'epam-project-biba', pattern: 'Dockerfile'
             }
         }
         
         stage('Build container') {
             steps {
-                git branch: 'main', credentialsId: 'GitHub-token', url: 'https://github.com/qbmk/spring-petclinic.git'
                 sh "gsutil cp gs://petclinic-artifacts/cicd/target/*.jar target/petclinic.jar"
+                sh "gsutil cp gs://petclinic-artifacts/cicd/Dockerfile Dockerfile"
                 sh "docker build --tag petclinic:ver$BUILD_NUMBER ."
             }
         }
